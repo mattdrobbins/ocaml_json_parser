@@ -1,22 +1,6 @@
 open Scanner
 
-let get_token_type_string = function
-| Scanner.COMMA -> "Comma"
-| LEFT_BRACE -> "Left Brace"
-| RIGHT_BRACE -> "Right Brace"
-| LEFT_SQUARE_BRACKET -> "LEFT_SQUARE_BRACKET"
-| RIGHT_SQUARE_BRACKET -> "Right_Square_Bracket"
-| TRUE -> "true"
-| FALSE-> "false"
-| COLON-> "colon"
-| NULL-> "null"
-| STRING-> "string"
-| NUMBER-> "number"
-| EOF-> "end of file"
-
-let get_token_type (t : Scanner.token) = t.token_type
-
-let print_token t = get_token_type t |> get_token_type_string |> print_endline
+let print_token t = print_endline (Scanner.token_string t)
 
 let print_tokens l = 
   List.iter print_token l

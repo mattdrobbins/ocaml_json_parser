@@ -19,7 +19,6 @@ module Scanner = struct
     | EOF
 
     type token = {
-        lexeme: string;
         literal: literal_type option;
         line: int;
         token_type: token_type;
@@ -32,6 +31,30 @@ module Scanner = struct
         line: int;
         tokens: token list;
     }
+
+    let token_type_to_string = function
+    | COMMA -> "COMMA"
+    | LEFT_BRACE -> "LEFT_BRACE"
+    | RIGHT_BRACE -> "RIGHT_BRACE"
+    | LEFT_SQUARE_BRACKET -> "LEFT_SQUARE_BRACKET"
+    | RIGHT_SQUARE_BRACKET -> "RIGHT_SQUARE_BRACKET"
+    | TRUE -> "TRUE"
+    | FALSE-> "FALSE"
+    | COLON-> "COLON"
+    | NULL-> "NULL"
+    | STRING-> "STRING"
+    | NUMBER-> "NUMBER"
+    | EOF-> "end of file"
+
+    let literal_type_to_string = function 
+    | STRING_LITERAL x -> Printf.sprintf "%s" x
+    | NUMBER_LITERAL y -> Printf.sprintf "%F" y
+
+    let literal_type_option_to_string = function 
+    | Some x -> literal_type_to_string x
+    | None -> "None"
+
+    let token_string (t : token) = Printf.sprintf "line: %i, token_type: %s, literal: %s" t.line (token_type_to_string t.token_type) (literal_type_option_to_string t.literal)
 
     let identifiers = StringMap.empty 
     |> StringMap.add "false" FALSE 
@@ -48,16 +71,15 @@ module Scanner = struct
 
     let current_char context = try Some (String.get context.source context.current) with Invalid_argument _ -> None
 
-    let create_token_literal token_type literal =
+    let create_token_literal token_type literal line =
         {
-           lexeme = "a";
            literal = literal;
-           line = 1;
+           line = line;
            token_type = token_type 
         }
     
     let add_token_literal token_type literal ctx =
-    {ctx with tokens = create_token_literal token_type literal :: ctx.tokens}
+    {ctx with tokens = create_token_literal token_type literal ctx.line :: ctx.tokens}
 
     let add_token token_type = add_token_literal token_type None
 
@@ -92,8 +114,8 @@ module Scanner = struct
         | Some '[' -> advance context |> add_token LEFT_SQUARE_BRACKET
         | Some ']' -> advance context |> add_token RIGHT_SQUARE_BRACKET
         | Some '"' -> advance context |> string_literal |> advance
-        | Some '1'..'9' -> number_literal context |> advance
-        | Some _ -> identifier context |> advance
+        | Some '1'..'9' -> number_literal context
+        | Some _ -> identifier context
         | None -> failwith "Dissalowed character None"    
     
     let rec _scan_tokens context = 
