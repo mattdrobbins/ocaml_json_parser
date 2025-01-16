@@ -16,4 +16,8 @@ let run_file filename =
       raise e
 
       
-let _ = print_tokens (run_file "example.json").tokens
+(* let _ = print_tokens (run_file "json_examples/example.json").tokens *)
+
+let print_json json = print_endline (Parser.json_option_to_string json)
+
+let _ = print_json (Parser.parse (run_file "json_examples/kvp_multi.json").tokens).json
