@@ -10,8 +10,8 @@ type json =
 
 let rec json_to_string = function 
 | NULL -> "NULL"
-| OBJECT x -> "OBJECT"
-| STRING _ -> "STRING"
+| OBJECT x -> "{" ^ StringMap.fold (fun k v init -> init ^ "key: " ^ k ^ ", value: " ^ json_to_string v) x "" ^ "}"
+| STRING y -> y
 | BOOL _ -> "BOOL"
 | NUMBER _ -> "NUMBER"
 | ARRAY _ -> "ARRAY"
