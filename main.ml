@@ -1,5 +1,3 @@
-open Scanner
-
 let print_token t = print_endline (Scanner.token_string t)
 
 let print_tokens l = 

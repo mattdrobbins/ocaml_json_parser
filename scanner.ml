@@ -1,5 +1,3 @@
-module Scanner = struct
-
     module StringMap = Map.Make(String)
 
     type literal_type = STRING_LITERAL of string | NUMBER_LITERAL of float 
@@ -44,7 +42,7 @@ module Scanner = struct
     | NULL-> "NULL"
     | STRING-> "STRING"
     | NUMBER-> "NUMBER"
-    | EOF-> "end of file"
+    | EOF-> "EOF"
 
     let literal_type_to_string = function 
     | STRING_LITERAL x -> Printf.sprintf "%s" x
@@ -53,6 +51,11 @@ module Scanner = struct
     let literal_type_option_to_string = function 
     | Some x -> literal_type_to_string x
     | None -> "None"
+
+    
+    let literal_type_option_to_string_exn = function 
+    | Some x -> literal_type_to_string x
+    | None -> failwith "can't unpack string"
 
     let token_string (t : token) = Printf.sprintf "line: %i, token_type: %s, literal: %s" t.line (token_type_to_string t.token_type) (literal_type_option_to_string t.literal)
 
@@ -73,11 +76,11 @@ module Scanner = struct
 
     let create_token_literal token_type literal line =
         {
-           literal = literal;
-           line = line;
-           token_type = token_type 
+            literal = literal;
+            line = line;
+            token_type = token_type 
         }
-    
+
     let add_token_literal token_type literal ctx =
     {ctx with tokens = create_token_literal token_type literal ctx.line :: ctx.tokens}
 
@@ -89,7 +92,7 @@ module Scanner = struct
         if (is_at_end ctx) then failwith "unterminated string"
         else if (compare_char_option (current_char ctx) (Some '"')) then add_token_literal STRING (Some(STRING_LITERAL(get_string (ctx.start + 1) (ctx.current - ctx.start - 1) ctx))) ctx
         else string_literal (advance ctx)
-    
+
     let rec number_literal ctx =
         match current_char ctx with
         | Some '.' -> number_literal (advance ctx)
@@ -117,7 +120,7 @@ module Scanner = struct
         | Some '1'..'9' -> number_literal context
         | Some _ -> identifier context
         | None -> failwith "Dissalowed character None"    
-    
+
     let rec _scan_tokens context = 
         if (is_at_end context) then context
         else let next_context = (scan_token context) 
@@ -132,6 +135,4 @@ module Scanner = struct
             current = 0;
             line = 1;
             tokens = []
-        } in _scan_tokens context |> reverse_tokens
-
-end
+        } in _scan_tokens context |> add_token EOF |> reverse_tokens
