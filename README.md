@@ -1,1 +1,2 @@
-WIP - Ocaml json parser from John Crickett's Coding Challanges
+A working json parser
+from https://codingchallenges.fyi/challenges/challenge-json-parser
