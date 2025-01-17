@@ -112,7 +112,7 @@ let rec number_literal ctx =
     match current_char ctx with
     | Some '.' -> number_literal (advance ctx)
     | Some '0'..'9' -> number_literal (advance ctx)
-    | _ -> (advance ctx) |> add_token_literal NUMBER (Some(NUMBER_LITERAL(float_of_string (get_string ctx.start (ctx.current - ctx.start) ctx))))
+    | _ -> ctx |> add_token_literal NUMBER (Some(NUMBER_LITERAL(float_of_string (get_string ctx.start (ctx.current - ctx.start) ctx))))
 
 let rec identifier ctx = 
     match current_char ctx with
